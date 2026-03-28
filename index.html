@@ -229,6 +229,7 @@
 
     // ── Protein spots ────────────────────────────────────────────────────────
     for (const s of spots) {
+
       const isHour = s.idx in hourIndexOf;
       const hIdx = hourIndexOf[s.idx] ?? 0;
       const color = spotColor(s.r1, isHour, hIdx);
@@ -286,7 +287,7 @@
       't': [[0,1,0],[1,1,1],[0,1,0],[0,1,0],[0,1,1]],
     };
     const LS  = 14;    // letter dot spacing — comfortable mid-size
-    const LR  = 6.5;   // letter dot radius
+    const LR  = 4.0;   // letter dot radius — middle ground between v1 (6.5) and blended (2.1)
     const LG  = 9;     // gap between letters
 
     const WORD = ['H','u','P','r','o','t'];
@@ -318,8 +319,8 @@
     ctx.save();
     ctx.scale(1, wordH / totalW);
     const bgGrad = ctx.createRadialGradient(wCx, wCy / (wordH / totalW), 0, wCx, wCy / (wordH / totalW), totalW * 0.60);
-    bgGrad.addColorStop(0,    'rgba(5,8,16,0.90)');
-    bgGrad.addColorStop(0.58, 'rgba(5,8,16,0.72)');
+    bgGrad.addColorStop(0,    'rgba(5,8,16,0.82)');
+    bgGrad.addColorStop(0.65, 'rgba(5,8,16,0.50)');
     bgGrad.addColorStop(1,    'rgba(5,8,16,0)');
     ctx.beginPath();
     ctx.arc(wCx, wCy / (wordH / totalW), totalW * 0.60, 0, Math.PI * 2);
