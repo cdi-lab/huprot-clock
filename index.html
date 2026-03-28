@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,16 +31,16 @@
     .header .title {
       font-size: 11px;
       letter-spacing: 5px;
-      color: #4a9eff;
-      opacity: 0.6;
+      color: #e8f4ff;
+      opacity: 1.0;
       text-transform: uppercase;
     }
 
     .header .sub {
       font-size: 9px;
       letter-spacing: 3px;
-      color: #888;
-      opacity: 0.45;
+      color: #d0e8ff;
+      opacity: 1.0;
       margin-top: 4px;
       text-transform: uppercase;
     }
@@ -55,8 +56,8 @@
       bottom: 18px;
       font-size: 8px;
       letter-spacing: 2.5px;
-      color: #2a4a6f;
-      opacity: 0.55;
+      color: #d0e8ff;
+      opacity: 1.0;
       text-transform: uppercase;
       text-align: center;
     }
@@ -313,16 +314,16 @@
     // ── Branding ─────────────────────────────────────────────────────────────
     ctx.font = '9px Courier New';
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(74,158,255,0.26)';
+    ctx.fillStyle = 'rgba(224,240,255,0.95)';
     ctx.fillText('HuProt™', CENTER, CENTER - RADIUS * 0.94);
 
     ctx.font = '8px Courier New';
-    ctx.fillStyle = 'rgba(74,158,255,0.20)';
+    ctx.fillStyle = 'rgba(208,232,255,0.92)';
     ctx.fillText('CDI Labs', CENTER, CENTER + RADIUS * 0.94);
 
     // ── Digital time ─────────────────────────────────────────────────────────
     ctx.font = '9px Courier New';
-    ctx.fillStyle = 'rgba(74,158,255,0.22)';
+    ctx.fillStyle = 'rgba(208,232,255,0.92)';
     ctx.fillText(now.toLocaleTimeString('en-US', { hour12: false }), CENTER, CENTER + RADIUS * 0.85);
 
     requestAnimationFrame(drawFrame);
