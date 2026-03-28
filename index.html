@@ -158,17 +158,17 @@
 
   // ── Fluorescence color palette ─────────────────────────────────────────────
   const HOUR_PALETTE = [
-    'rgba(255,235,60,0.93)',  'rgba(60,255,130,0.90)', 'rgba(255,70,70,0.90)',
-    'rgba(255,235,60,0.93)',  'rgba(60,255,130,0.90)', 'rgba(255,70,70,0.90)',
-    'rgba(255,235,60,0.93)',  'rgba(100,200,255,0.90)','rgba(60,255,130,0.90)',
-    'rgba(255,70,70,0.90)',   'rgba(255,235,60,0.93)', 'rgba(60,255,130,0.90)',
+    'rgba(255,235,60,0.93)',  'rgba(60,255,100,0.92)', 'rgba(255,60,60,0.90)',
+    'rgba(60,255,100,0.92)',  'rgba(255,235,60,0.93)', 'rgba(255,60,60,0.90)',
+    'rgba(255,235,60,0.93)',  'rgba(60,255,100,0.92)', 'rgba(255,60,60,0.90)',
+    'rgba(255,235,60,0.93)',  'rgba(60,255,100,0.92)', 'rgba(255,60,60,0.90)',
   ];
 
   function spotColor(v, isHour, hIdx) {
     if (isHour) return HOUR_PALETTE[hIdx % 12];
-    if (v > 0.970) return 'rgba(255,240,80,0.95)';
-    if (v > 0.930) return 'rgba(60,255,130,0.92)';
-    if (v > 0.880) return 'rgba(255,70,70,0.90)';
+    if (v > 0.970) return 'rgba(255,235,60,0.95)';   // yellow = co-expression hit
+    if (v > 0.930) return 'rgba(60,255,100,0.92)';
+    if (v > 0.880) return 'rgba(255,60,60,0.90)';
     if (v > 0.800) return 'rgba(100,200,60,0.62)';
     if (v > 0.680) return 'rgba(180,40,40,0.50)';
     if (v > 0.520) return 'rgba(0,120,50,0.35)';
@@ -275,6 +275,99 @@
       ctx.stroke();
     }
 
+
+    // ── "HuProt" dot-matrix signature in the center ──────────────────────────
+    const LGRID = {
+      'H': [[1,0,1],[1,0,1],[1,1,1],[1,0,1],[1,0,1]],
+      'u': [[0,0,0],[1,0,1],[1,0,1],[1,0,1],[1,1,1]],
+      'P': [[1,1,0],[1,0,1],[1,1,0],[1,0,0],[1,0,0]],
+      'r': [[0,0,0],[0,0,0],[1,1,0],[1,0,0],[1,0,0]],
+      'o': [[0,0,0],[0,1,0],[1,0,1],[1,0,1],[0,1,0]],
+      't': [[0,1,0],[1,1,1],[0,1,0],[0,1,0],[0,1,1]],
+    };
+    const LS  = 14;    // letter dot spacing — comfortable mid-size
+    const LR  = 6.5;   // letter dot radius
+    const LG  = 9;     // gap between letters
+
+    const WORD = ['H','u','P','r','o','t'];
+
+    // Cy3 green / Cy5 red only — brand accurate, alternating per letter
+    const CY3 = 'rgba(60,255,100,1)';
+    const CY5 = 'rgba(255,60,60,1)';
+    const LGLOW = [CY3, CY5, CY3, CY5, CY3, CY5];
+
+    // Superscript ™ dot grids (3-col × 3-row, rendered at half scale)
+    const TM_GRIDS = {
+      'T': [[1,1,1],[0,1,0],[0,1,0]],
+      'M': [[1,0,1],[1,1,1],[1,0,1]],
+    };
+    const LS_TM = LS * 0.48;
+    const LR_TM = LR * 0.46;
+    const LG_TM = 4;
+
+    const wordW = WORD.length * 3 * LS + (WORD.length - 1) * LG;
+    const wordH = 5 * LS;
+    const tmW   = 2 * 3 * LS_TM + LG_TM;
+    const totalW = wordW + 6 + tmW;
+    const lsx = CENTER - totalW / 2;
+    const lsy = CENTER - wordH / 2;
+
+    // Soft elliptical dark fade behind the word
+    const wCx = lsx + totalW / 2;
+    const wCy = lsy + wordH / 2;
+    ctx.save();
+    ctx.scale(1, wordH / totalW);
+    const bgGrad = ctx.createRadialGradient(wCx, wCy / (wordH / totalW), 0, wCx, wCy / (wordH / totalW), totalW * 0.60);
+    bgGrad.addColorStop(0,    'rgba(5,8,16,0.90)');
+    bgGrad.addColorStop(0.58, 'rgba(5,8,16,0.72)');
+    bgGrad.addColorStop(1,    'rgba(5,8,16,0)');
+    ctx.beginPath();
+    ctx.arc(wCx, wCy / (wordH / totalW), totalW * 0.60, 0, Math.PI * 2);
+    ctx.fillStyle = bgGrad;
+    ctx.fill();
+    ctx.restore();
+
+    // Main letters — whole-letter alternating Cy3/Cy5
+    WORD.forEach((ch, ci) => {
+      const dotCol = LGLOW[ci];
+      LGRID[ch].forEach((row, ri) => {
+        row.forEach((on, cj) => {
+          if (!on) return;
+          const dx = lsx + ci * (3 * LS + LG) + cj * LS + LS / 2;
+          const dy = lsy + ri * LS + LS / 2;
+          ctx.save();
+          ctx.shadowBlur = 13;
+          ctx.shadowColor = dotCol;
+          ctx.beginPath();
+          ctx.arc(dx, dy, LR, 0, Math.PI * 2);
+          ctx.fillStyle = dotCol;
+          ctx.fill();
+          ctx.restore();
+        });
+      });
+    });
+
+    // Superscript ™ — top-right of last letter, in yellow (co-expression)
+    const TM_YELLOW = 'rgba(255,235,60,1)';
+    const tmStartX = lsx + wordW + 6;
+    const tmStartY = lsy; // top-aligned = superscript position
+    ['T','M'].forEach((ch, ci) => {
+      TM_GRIDS[ch].forEach((row, ri) => {
+        row.forEach((on, cj) => {
+          if (!on) return;
+          const dx = tmStartX + ci * (3 * LS_TM + LG_TM) + cj * LS_TM + LS_TM / 2;
+          const dy = tmStartY + ri * LS_TM + LS_TM / 2;
+          ctx.save();
+          ctx.shadowBlur = 9;
+          ctx.shadowColor = TM_YELLOW;
+          ctx.beginPath();
+          ctx.arc(dx, dy, LR_TM, 0, Math.PI * 2);
+          ctx.fillStyle = TM_YELLOW;
+          ctx.fill();
+          ctx.restore();
+        });
+      });
+    });
 
     // ── Clock hands ──────────────────────────────────────────────────────────
     const secAng = ((sc + ms / 1000) / 60) * Math.PI * 2 - Math.PI / 2;
