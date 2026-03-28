@@ -155,6 +155,7 @@
     }
   });
 
+
   // ── Fluorescence color palette ─────────────────────────────────────────────
   const HOUR_PALETTE = [
     'rgba(255,235,60,0.93)',  'rgba(60,255,130,0.90)', 'rgba(255,70,70,0.90)',
@@ -274,19 +275,6 @@
       ctx.stroke();
     }
 
-    // ── Hour numerals ────────────────────────────────────────────────────────
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (let h = 1; h <= 12; h++) {
-      const ang = (h / 12) * Math.PI * 2 - Math.PI / 2;
-      const tr = RADIUS * 0.92;
-      ctx.font = h % 3 === 0 ? 'bold 14px Courier New' : '10px Courier New';
-      ctx.fillStyle = 'rgba(180,210,255,0.68)';
-      ctx.fillText(String(h),
-        CENTER + Math.cos(ang) * tr,
-        CENTER + Math.sin(ang) * tr
-      );
-    }
 
     // ── Clock hands ──────────────────────────────────────────────────────────
     const secAng = ((sc + ms / 1000) / 60) * Math.PI * 2 - Math.PI / 2;
@@ -311,22 +299,7 @@
     ctx.fill();
     ctx.restore();
 
-    // ── Branding ─────────────────────────────────────────────────────────────
-    ctx.font = '9px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(224,240,255,0.95)';
-    ctx.fillText('HuProt™', CENTER, CENTER - RADIUS * 0.94);
-
-    ctx.font = '8px Courier New';
-    ctx.fillStyle = 'rgba(208,232,255,0.92)';
-    ctx.fillText('CDI Labs', CENTER, CENTER + RADIUS * 0.94);
-
-    // ── Digital time ─────────────────────────────────────────────────────────
-    ctx.font = '9px Courier New';
-    ctx.fillStyle = 'rgba(208,232,255,0.92)';
-    ctx.fillText(now.toLocaleTimeString('en-US', { hour12: false }), CENTER, CENTER + RADIUS * 0.85);
-
-    requestAnimationFrame(drawFrame);
+requestAnimationFrame(drawFrame);
   }
 
   // ── Fullscreen toggle ──────────────────────────────────────────────────────
